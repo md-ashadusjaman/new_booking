@@ -15,23 +15,31 @@
 }
 
 .btn {
-  @apply bg-primaryColor py-[15px] px-[35px] rounded-[50px] text-white font-[600] mt-[38px]; /* Ensure primaryColor is defined */
+  @apply bg-primaryColor py-[15px] px-[35px] rounded-[50px] text-white font-[600] mt-[38px];
 }
 
 .heading {
-  @apply text-[44px] leading-[54px] font-[700] text-headingColor; /* Ensure headingColor is defined */
+  @apply text-[44px] leading-[54px] font-[700] text-headingColor;
 }
 
 .text_para {
-  @apply text-[18px] leading-[30px] font-[400] text-textColor mt-[18px]; /* Ensure textColor is defined */
+  @apply text-[18px] leading-[30px] font-[400] text-textColor mt-[18px];
 }
 
 .header {
-  @apply bg-[url('../../assets/images/mask.png')] bg-no-repeat bg-center bg-cover w-full h-[100px] leading-[100px]; /* Check the path */
+  @apply bg-[url('../../assets/images/mask.png')] bg-no-repeat bg-center bg-cover w-full h-[100px] leading-[100px];
 }
 
 .hero_section {
-  @apply bg-[url('../../assets/images/hero-bg.png')] bg-no-repeat bg-center bg-cover; /* Check the path */
+  @apply bg-[url('../../assets/images/hero-bg.png')] bg-no-repeat bg-center bg-cover;
+}
+
+.form_label {
+  @apply text-textColor font-semibold text-[16px] leading-7 mb-2;
+}
+
+.form_input {
+  @apply w-full px-4 py-3 border-solid border-[#0066ff61] focus:outline-none focus:border-primaryColor text-[16px] leading-7 text-headingColor placeholder:text-textColor cursor-pointer rounded-md;
 }
 
 @media only screen and (max-width: 1024px) {
