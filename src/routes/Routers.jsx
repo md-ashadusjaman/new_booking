@@ -9,6 +9,7 @@ import DoctorDetails from '../pages/Doctors/DoctorDetails'
 
 
 import {Routes, Route} from 'react-router-dom'
+import MyAccount from '../Dashboard/user-account/MyAccount'
 
 
 
@@ -24,6 +25,7 @@ const Routers = () => {
       <Route path="/register" element={<Signup/>} />
       <Route path="/contact" element={<Contact/>} />
       <Route path="/services" element={<Services/>} />
+      <Route path="/users/profile/me" element={<MyAccount/>} />
       
       </Routes>
     </div>

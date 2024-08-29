@@ -1,42 +1,85 @@
 import React, { useState } from 'react';
 import signupImg from '../assets/images/signup.gif';
 import avatar from '../assets/images/avatar-icon.png';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import uploadImageToCloudinary from '../utils/uploadCloudinary.js';
+
+import { BASE_URL } from '../../config';
+import { toast } from 'react-toastify';
+import { HashLoader } from 'react-spinners';
 
 const Signup = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [previewURL, setPreviewURL] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
-    email: "",
-    password: "",
-    photo: selectedFile,
-    gender: "",
-    role: "patient"
+    email: '',
+    password: '',
+    photo: '',
+    gender: '',
+    role: 'patient'
   });
+
+  const navigate = useNavigate();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (file) {
-      setSelectedFile(file);
-      setFormData({ ...formData, photo: file });
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewURL(reader.result);
       };
       reader.readAsDataURL(file);
+
+      try {
+        const data = await uploadImageToCloudinary(file);
+        if (data && data.secure_url) {
+          setFormData({ ...formData, photo: data.secure_url });
+          setSelectedFile(data.secure_url); // Save the secure URL from Cloudinary
+          toast.success('Image uploaded successfully!');
+        } else {
+          throw new Error('Image upload failed');
+        }
+      } catch (error) {
+        toast.error('Error uploading image: ' + error.message);
+        console.error('Error uploading image:', error);
+      }
     }
   };
 
-  const submitHandler = (event) => {
+  const submitHandler = async event => {
     event.preventDefault();
-    // Handle form submission logic here
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const { message } = await res.json();
+
+      if (!res.ok) {
+        throw new Error(message);
+      }
+
+      setLoading(false);
+      toast.success(message);
+      navigate('/login');
+    } catch (err) {
+      toast.error(err.message);
+      setLoading(false);
+    }
   };
 
   return (
@@ -114,9 +157,11 @@ const Signup = () => {
               </div>
 
               <div className='mb-5 flex items-center gap-3'>
-                <figure className='w-[60px] h-[60px] rounded-full border-2 border-solid border-primaryColor flex items-center justify-center'>
-                  <img src={previewURL || avatar} alt="Avatar" className='w-full rounded-full' />
-                </figure>
+                {selectedFile && (
+                  <figure className='w-[60px] h-[60px] rounded-full border-2 border-solid border-primaryColor flex items-center justify-center'>
+                    <img src={previewURL || avatar} alt="Avatar" className='w-full rounded-full' />
+                  </figure>
+                )}
 
                 <div className='relative w-[130px] h-[50px]'>
                   <input
@@ -128,18 +173,18 @@ const Signup = () => {
                     className='absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer'
                   />
 
-                  <label htmlFor='customFile' className='absolute top-0 left-0 w-full h-full flex items-center px-[0.75rem] py-[0.375rem] text-[15px] leading-6 overflow-hidden bg-[#0066fff46] text-headingColor font-semibold rounded-lg truncate cursor-pointer'>
+                  <label htmlFor='customFile' className='absolute top-0 left-0 w-full h-full flex items-center justify-center text-center px-[0.75rem] py-[0.375rem] text-[15px] leading-6 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white font-semibold rounded-lg shadow-md cursor-pointer transition duration-300 ease-in-out transform hover:scale-105'>
                     Upload Photo
                   </label>
                 </div>
               </div>
 
               <div className="mt-7">
-                <button
+                <button disabled={loading}
                   type="submit"
                   className="w-full bg-primaryColor text-white text-[18px] leading-[30px] rounded-lg px-4 py-3"
                 >
-                  Sign Up
+                  {loading ? <HashLoader size={35} color="yellow" /> : 'Sign Up'}
                 </button>
               </div>
 
